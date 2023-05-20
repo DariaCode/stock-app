@@ -2,21 +2,18 @@
 <template>
   <div ref="chartContainer" class="stock-graph">
     <div class="tooltip" ref="tooltip"></div>
+    <div class="tooltipDate" ref="tooltipDate"></div>
   </div>
 </template>
 
 <script lang="ts">
 import * as d3 from 'd3'
-
 import { defineComponent, onMounted, PropType, ref } from 'vue'
+import { getStocksData, getPerformancesData } from '../services/apiService'
 
 export default defineComponent({
   name: 'StockGraph',
   props: {
-    data: {
-      type: Object as PropType<{ [key: string]: { date: string; value: number }[] }>,
-      required: true
-    },
     width: {
       type: Number,
       default: 800
@@ -42,15 +39,21 @@ export default defineComponent({
   setup (props) {
     const chartContainer = ref<HTMLDivElement | null>(null)
     const tooltip = ref<HTMLDivElement | null>(null)
+    const tooltipDate = ref<HTMLDivElement | null>(null)
 
-    onMounted(() => {
+    onMounted(async () => {
+      const stocksData: { [key: string]: { date: string; value: number; price: number }[] } = await getStocksData()
+      console.log('🚀 ~ file: StockGraph.vue:50 ~ onMounted ~ stocksData:', stocksData)
+      const performancesData = await getPerformancesData()
+      console.log('🚀 ~ file: StockGraph.vue:52 ~ onMounted ~ performancesData:', performancesData)
+
       if (chartContainer.value) {
-        const { width, height, margin, data, colors } = props
+        const { width, height, margin, colors } = props
 
-        const lineDataKeys = Object.keys(data)
+        const lineDataKeys = Object.keys(stocksData)
 
         const validData = lineDataKeys.map((key) =>
-          data[key].map((d: { date: string; value: number }) => ({
+          stocksData[key].map((d: { date: string; value: number, price: number }) => ({
             date: new Date(d.date),
             value: d.value
           }))
@@ -87,6 +90,7 @@ export default defineComponent({
           svg
             .append('path')
             .datum(lineData)
+            .attr('class', 'line')
             .attr('fill', 'none')
             .attr('stroke', colors[i % colors.length])
             .attr('stroke-width', 2)
@@ -134,19 +138,18 @@ export default defineComponent({
 
         function mousemove (event: MouseEvent) {
           const [xMouse, yMouse] = d3.pointer(event)
-          // console.log('🚀 ~ file: StockGraph.vue:137 ~ mousemove ~  [xMouse, yMouse] :', [xMouse, yMouse])
           const bisectDate = d3.bisector((d: { date: Date }) => d.date).left
 
           lineDataKeys.forEach((lineKey) => {
-            const lineData = data[lineKey]
-            // console.log('🚀 ~ file: StockGraph.vue:142 ~ lineDataKeys.forEach ~ lineData:', lineData)
+            const lineData = stocksData[lineKey]
             const bisectIndex = bisectDate(
-              lineData.map((d) => ({ date: new Date(d.date), value: d.value })), // Convert date strings to Date objects
+              lineData.map((d) => ({ date: new Date(d.date), value: d.value, price: d.price })),
               x.invert(xMouse)
             )
             const d = lineData[bisectIndex]
+
             const xPos = x(new Date(d.date))
-            const yPos = y(d.value)
+            const yPos = y(y.invert(yMouse))
 
             focus.select('.focus-line-x')
               .attr('x1', xPos)
@@ -156,20 +159,42 @@ export default defineComponent({
               .attr('y1', yPos)
               .attr('y2', yPos)
 
-            const tooltipValue = tooltip.value ? (tooltip.value as unknown as Record<string, HTMLDivElement>)[lineKey] : null
-            console.log('🚀 ~ file: StockGraph.vue:159 ~ lineDataKeys.forEach ~ tooltipValue:', tooltipValue, tooltip)
+            // Access the tooltip element
+            const tooltipValue = tooltip.value as HTMLDivElement
+            const tooltipDateValue = tooltipDate.value as HTMLDivElement
+
             if (tooltipValue) {
               tooltipValue.style.display = 'block'
-              tooltipValue.style.left = `${xPos}px`
-              tooltipValue.style.top = `${yPos - 20}px`
-              tooltipValue.textContent = `Value: ${d.value}`
+              tooltipValue.style.left = '10px'
+              tooltipValue.style.top = '10px'
+
+              let tooltipContent = ''
+
+              lineDataKeys.forEach((lineKey) => {
+                const lineData = stocksData[lineKey]
+                const bisectIndex = bisectDate(
+                  lineData.map((d) => ({ date: new Date(d.date), value: d.value, price: d.price })),
+                  x.invert(xMouse)
+                )
+                const d = lineData[bisectIndex]
+                tooltipContent += `${lineKey}: ${d.value}, real price: ${d.price}<br>`
+              })
+
+              tooltipValue.innerHTML = tooltipContent
+
+              if (tooltipDateValue) {
+                tooltipDateValue.style.display = 'block'
+                tooltipDateValue.style.left = '10px'
+                tooltipDateValue.style.top = '10px'
+                tooltipDateValue.innerHTML = `${d.date}`
+              }
             }
           })
         }
       }
     })
 
-    return { chartContainer, tooltip }
+    return { chartContainer, tooltip, tooltipDate }
   }
 })
 </script>
@@ -185,6 +210,15 @@ export default defineComponent({
   background-color: white;
   border: 1px solid gray;
   padding: 4px;
+}
+
+.tooltipDate {
+  position: absolute;
+  pointer-events: none;
+  background-color: white;
+  border: 1px solid gray;
+  padding: 4px;
+  margin-left: 100px;
 }
 
 .focus-line-x,

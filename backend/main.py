@@ -1,5 +1,6 @@
 import json
 from flask import Flask, jsonify
+from flask_cors import CORS
 from api.api import api_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 
@@ -16,6 +17,9 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 def swagger():
     with open('swagger.json', 'r') as f:
         return jsonify(json.load(f))
+    
+# Enable CORS for all routes
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 
 if __name__ == '__main__':
     app.run(port=5000)
