@@ -1,0 +1,147 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Stock API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/stocks": {
+      "get": {
+        "operationId": "api_bp.stocks",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "cumulative_return": {
+                        "type": "number"
+                      },
+                      "annualized_return": {
+                        "type": "number"
+                      },
+                      "annualized_volatility": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stock/{stockName}": {
+      "get": {
+        "operationId": "api_bp.stock",
+        "parameters": [
+          {
+            "name": "stockName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cumulative_return": {
+                      "type": "number"
+                    },
+                    "annualized_return": {
+                      "type": "number"
+                    },
+                    "annualized_volatility": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/performances": {
+      "get": {
+        "operationId": "api_bp.performances",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "cumulative_return": {
+                        "type": "number"
+                      },
+                      "annualized_return": {
+                        "type": "number"
+                      },
+                      "annualized_volatility": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/performance/{stockName}": {
+      "get": {
+        "operationId": "api_bp.performance",
+        "parameters": [
+          {
+            "name": "stockName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cumulative_return": {
+                      "type": "string"
+                    },
+                    "annualized_return": {
+                      "type": "string"
+                    },
+                    "annualized_volatility": {
+                      "type": "sting"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
