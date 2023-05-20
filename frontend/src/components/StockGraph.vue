@@ -1,8 +1,8 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <template>
   <div ref="chartContainer" class="stock-graph">
-    <div class="tooltip" ref="tooltip"></div>
     <div class="tooltipDate" ref="tooltipDate"></div>
+    <div class="tooltip" ref="tooltip"></div>
   </div>
 </template>
 
@@ -164,10 +164,6 @@ export default defineComponent({
             const tooltipDateValue = tooltipDate.value as HTMLDivElement
 
             if (tooltipValue) {
-              tooltipValue.style.display = 'block'
-              tooltipValue.style.left = '10px'
-              tooltipValue.style.top = '10px'
-
               let tooltipContent = ''
 
               lineDataKeys.forEach((lineKey) => {
@@ -177,15 +173,13 @@ export default defineComponent({
                   x.invert(xMouse)
                 )
                 const d = lineData[bisectIndex]
-                tooltipContent += `${lineKey}: ${d.value}, real price: ${d.price}<br>`
+                tooltipContent += `${lineKey}: ${d.value}, ${d.price.toFixed(2)}<br>`
               })
-
+              tooltipValue.style.display = 'block'
               tooltipValue.innerHTML = tooltipContent
 
               if (tooltipDateValue) {
                 tooltipDateValue.style.display = 'block'
-                tooltipDateValue.style.left = '10px'
-                tooltipDateValue.style.top = '10px'
                 tooltipDateValue.innerHTML = `${d.date}`
               }
             }
@@ -204,21 +198,11 @@ export default defineComponent({
   font-family: Arial, sans-serif;
 }
 
-.tooltip {
-  position: absolute;
-  pointer-events: none;
-  background-color: white;
-  border: 1px solid gray;
-  padding: 4px;
-}
-
+.tooltip,
 .tooltipDate {
-  position: absolute;
   pointer-events: none;
   background-color: white;
-  border: 1px solid gray;
   padding: 4px;
-  margin-left: 100px;
 }
 
 .focus-line-x,
