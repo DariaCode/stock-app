@@ -7,7 +7,7 @@ A stock market dashboard built with Vue.js that displays the historical performa
 ## Features
 - Visualizes the historical performance of multiple stocks using line charts.
 - Displays key performance metrics in a table format.
-- Supports dynamic data fetching from an API to ensure up-to-date information.
+- Supports dynamic data fetching from an API to ensure up-to-date information (https://stock-market-21052023.ew.r.appspot.com/api/docs/).
 - Provides interactive features such as tooltips and crosshair lines for data exploration.
 
 ## Installation
