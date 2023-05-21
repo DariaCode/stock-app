@@ -24,4 +24,4 @@ CORS(app, origins=['http://localhost:8080', 'http://192.168.86.37:8080'])
 # CORS(app)
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
