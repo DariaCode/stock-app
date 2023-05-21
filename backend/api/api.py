@@ -33,7 +33,6 @@ def performances():
     for stock in stocks:
         stock_data = finance.download(stock, period='5y')
         stock_data_year = finance.download(stock, period='1y')
-        print(stock_data)
         stocks_performance[stock] = calculate_performance(stock_data, stock_data_year)
 
     return jsonify(stocks_performance)
@@ -42,7 +41,6 @@ def performances():
 def performance(stockName):
     stock_data = finance.download(stockName, period='5y')
     stock_data_year = finance.download(stockName, period='1y')
-    print(stock_data)
     stock_performance = calculate_performance(stock_data, stock_data_year)
 
     return jsonify(stock_performance)

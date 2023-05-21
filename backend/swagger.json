@@ -18,13 +18,13 @@
                   "additionalProperties": {
                     "type": "object",
                     "properties": {
-                      "cumulative_return": {
+                      "date": {
+                        "type": "string"
+                      },
+                      "price": {
                         "type": "number"
                       },
-                      "annualized_return": {
-                        "type": "number"
-                      },
-                      "annualized_volatility": {
+                      "value": {
                         "type": "number"
                       }
                     }
@@ -57,13 +57,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "cumulative_return": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "price": {
                       "type": "number"
                     },
-                    "annualized_return": {
-                      "type": "number"
-                    },
-                    "annualized_volatility": {
+                    "value": {
                       "type": "number"
                     }
                   }
@@ -87,6 +87,21 @@
                   "additionalProperties": {
                     "type": "object",
                     "properties": {
+                      "open": {
+                        "type": "number"
+                      },
+                      "high": {
+                        "type": "number"
+                      },
+                      "low": {
+                        "type": "number"
+                      },
+                      "close": {
+                        "type": "number"
+                      },
+                      "volume": {
+                        "type": "number"
+                      },
                       "cumulative_return": {
                         "type": "number"
                       },
@@ -126,14 +141,29 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "open": {
+                      "type": "number"
+                    },
+                    "high": {
+                      "type": "number"
+                    },
+                    "low": {
+                      "type": "number"
+                    },
+                    "close": {
+                      "type": "number"
+                    },
+                    "volume": {
+                      "type": "number"
+                    },
                     "cumulative_return": {
-                      "type": "string"
+                      "type": "number"
                     },
                     "annualized_return": {
-                      "type": "string"
+                      "type": "number"
                     },
                     "annualized_volatility": {
-                      "type": "sting"
+                      "type": "number"
                     }
                   }
                 }

@@ -20,6 +20,11 @@ def calculate_performance(data, data_year):
     annualized_volatility = calculate_annualized_volatility(data_year)
 
     stock_performance = {
+        'open': data_year.iloc[-1]['Open'],
+        'high': data_year.iloc[-1]['High'],
+        'low': data_year.iloc[-1]['Low'],
+        'close': data_year.iloc[-1]['Close'],
+        'volume': data_year.iloc[-1]['Volume'],
         'cumulative_return': cumulative_return * 100,
         'annualized_return': annualized_return * 100,
         'annualized_volatility': annualized_volatility * 100
@@ -29,22 +34,22 @@ def calculate_performance(data, data_year):
     
 
 def calculate_cumulative_return(data):
-    start_price = Decimal(data.iloc[0]['Close'])
-    end_price = Decimal(data.iloc[-1]['Close'])
+    start_price = data.iloc[0]['Close']
+    end_price = data.iloc[-1]['Close']
     total_return = end_price - start_price
     cumulative_return = (total_return / start_price) 
 
-    return round(cumulative_return, 2)
+    return cumulative_return
 
 def calculate_annualized_return(cumulative_return, years):
-    annualized_return = ((1 + cumulative_return) ** Decimal(1) / Decimal(years)) - 1
+    annualized_return = ((1 + cumulative_return) ** 1 / years) - 1
 
-    return round(annualized_return, 2)
+    return annualized_return
 
 def calculate_annualized_volatility(data):
     data['Daily Return'] = data['Close'].pct_change()
-    volatility = Decimal(str(data['Daily Return'].std()))
+    volatility = data['Daily Return'].std()
     trading_days_per_year = 252
-    annualized_volatility = volatility * (Decimal(trading_days_per_year) ** Decimal('0.5'))
+    annualized_volatility = volatility * (trading_days_per_year ** 0.5)
 
-    return round(annualized_volatility, 2)
+    return annualized_volatility

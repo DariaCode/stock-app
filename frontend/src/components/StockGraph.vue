@@ -1,15 +1,17 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <template>
   <div ref="chartContainer" class="stock-graph">
-    <div class="tooltipDate" ref="tooltipDate"></div>
-    <div class="tooltip" ref="tooltip"></div>
+    <div class="tooltips">
+      <div class="tooltipDate" ref="tooltipDate"></div>
+      <div class="tooltip" ref="tooltip"></div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import * as d3 from 'd3'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
-import { getStocksData, getPerformancesData } from '../services/apiService'
+import { getStocksData } from '../services/apiService'
 
 export default defineComponent({
   name: 'StockGraph',
@@ -33,7 +35,7 @@ export default defineComponent({
     },
     colors: {
       type: Array as PropType<string[]>,
-      default: () => ['steelblue', 'green', 'red']
+      default: () => ['#00bcd4', '#089981', '#d81b60']
     }
   },
   setup (props) {
@@ -43,9 +45,6 @@ export default defineComponent({
 
     onMounted(async () => {
       const stocksData: { [key: string]: { date: string; value: number; price: number }[] } = await getStocksData()
-      console.log('🚀 ~ file: StockGraph.vue:50 ~ onMounted ~ stocksData:', stocksData)
-      const performancesData = await getPerformancesData()
-      console.log('🚀 ~ file: StockGraph.vue:52 ~ onMounted ~ performancesData:', performancesData)
 
       if (chartContainer.value) {
         const { width, height, margin, colors } = props
@@ -163,8 +162,18 @@ export default defineComponent({
             const tooltipValue = tooltip.value as HTMLDivElement
             const tooltipDateValue = tooltipDate.value as HTMLDivElement
 
+            if (tooltipDateValue) {
+              tooltipDateValue.style.display = 'block'
+              tooltipDateValue.innerHTML = `${new Date(d.date).toDateString()}`
+            }
+
             if (tooltipValue) {
-              let tooltipContent = ''
+              let tooltipContent = `<table style="width:270px">
+                  <tr>
+                    <th style="width:90px">Stock</th>
+                    <th style="width:90px">Value</th>
+                    <th style="width:90px">Price</th>
+                  </tr>`
 
               lineDataKeys.forEach((lineKey) => {
                 const lineData = stocksData[lineKey]
@@ -173,15 +182,10 @@ export default defineComponent({
                   x.invert(xMouse)
                 )
                 const d = lineData[bisectIndex]
-                tooltipContent += `${lineKey}: ${d.value}, ${d.price.toFixed(2)}<br>`
+                tooltipContent += `<tr><th>${lineKey}</th><th>${d.value}</th><th>${d.price.toFixed(2)}</th></tr>`
               })
-              tooltipValue.style.display = 'block'
-              tooltipValue.innerHTML = tooltipContent
-
-              if (tooltipDateValue) {
-                tooltipDateValue.style.display = 'block'
-                tooltipDateValue.innerHTML = `${d.date}`
-              }
+              tooltipValue.style.display = 'flex'
+              tooltipValue.innerHTML = tooltipContent + '</table>'
             }
           })
         }
@@ -195,14 +199,30 @@ export default defineComponent({
 
 <style scoped>
 .stock-graph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: Arial, sans-serif;
+  flex-direction: row-reverse;
+}
+
+.tooltipDate {
+  color: #089981;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.tooltips {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  color: #131722;
 }
 
 .tooltip,
 .tooltipDate {
   pointer-events: none;
-  background-color: white;
   padding: 4px;
+  justify-content: space-around;
 }
 
 .focus-line-x,
