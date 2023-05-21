@@ -1,5 +1,7 @@
 # Stock Market Dashboard
 
+https://stock-market-21052023.ew.r.appspot.com/
+
 A stock market dashboard built with Vue.js that displays the historical performance of multiple stocks using line charts and a table. The dashboard fetches data from an API to ensure up-to-date information and provides interactive features for data exploration.
 
 ## Features

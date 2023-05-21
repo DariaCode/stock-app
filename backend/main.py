@@ -1,5 +1,6 @@
 import json
-from flask import Flask, jsonify
+import os
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from api.api import api_bp
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -9,7 +10,7 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 # Swagger UI configuration
 SWAGGER_URL = '/api/docs'
-API_URL = 'http://127.0.0.1:5000/swagger.json'
+API_URL = 'https://stock-market-21052023.ew.r.appspot.com/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
@@ -17,10 +18,15 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 def swagger():
     with open('swagger.json', 'r') as f:
         return jsonify(json.load(f))
-    
-# Enable CORS for all routes
-# CORS(app, origins=['http://localhost:8080', 'http://192.168.86.37:8080'])
-# CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_vue_frontend(path):
+    if path and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
 CORS(app)
 
 if __name__ == '__main__':

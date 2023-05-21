@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://127.0.0.1:5000/api'
+const API_BASE_URL = 'https://stock-market-21052023.ew.r.appspot.com/api' //  'http://127.0.0.1:5000/api'
 const STOCKS_API_URL = `${API_BASE_URL}/stocks`
 const PERFORMANCES_API_URL = `${API_BASE_URL}/performances`
 

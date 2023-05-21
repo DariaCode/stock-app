@@ -4,7 +4,7 @@ Stock App is a web application that provides information about stocks and their 
 ## Features
 - Retrieve stock data for multiple stocks and display historical prices.
 - Calculate and display the cumulative return, annualized return, and annualized volatility for individual stocks.
-- View stock data and performance metrics through a Swagger UI interface.
+- View stock data and performance metrics through a Swagger UI interface. https://stock-market-21052023.ew.r.appspot.com/api/docs/
 
 ## Installation
 1. Clone the repository:
