@@ -7,6 +7,8 @@ Stock App is a web application that provides information about stocks and their 
 - View stock data and performance metrics through a Swagger UI interface. 
 	https://stock-market-21052023.ew.r.appspot.com/api/docs/
 
+	![](../frontend/public/backend.png)
+
 ## Installation
 1. Clone the repository:
 

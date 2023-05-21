@@ -10,6 +10,8 @@ A stock market dashboard built with Vue.js that displays the historical performa
 - Supports dynamic data fetching from an API to ensure up-to-date information (https://stock-market-21052023.ew.r.appspot.com/api/docs/).
 - Provides interactive features such as tooltips and crosshair lines for data exploration.
 
+![](public/frontend.png)
+
 ## Installation
 1. Clone the repository:
 
