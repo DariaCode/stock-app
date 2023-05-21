@@ -1,4 +1,10 @@
 /* eslint-disable camelcase */
+export interface Stock {
+  date: string;
+  value: number;
+  price: number;
+}
+
 export interface PerformanceData {
   open: number;
   high: number;

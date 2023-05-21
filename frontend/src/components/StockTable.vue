@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { getPerformancesData } from '../services/apiService'
 import { PerformanceData } from './Models'
 
@@ -41,12 +41,25 @@ export default defineComponent({
   setup () {
     const performancesData = ref<Record<string, PerformanceData>>({})
 
-    onMounted(async () => {
+    const fetchPerformancesData = async () => {
       try {
         performancesData.value = await getPerformancesData()
       } catch (error) {
         console.error('Error fetching performances data:', error)
       }
+    }
+
+    const intervalId = ref<number | null>(null)
+
+    onMounted(() => {
+      fetchPerformancesData()
+      // Fetch data every 10 mins
+      intervalId.value = setInterval(fetchPerformancesData, 600000)
+    })
+
+    onUnmounted(() => {
+      // Clear the interval when the component is unmounted
+      if (intervalId.value) clearInterval(intervalId.value)
     })
 
     return { performancesData }
@@ -66,6 +79,7 @@ export default defineComponent({
   text-align: center;
   color: #131722;
   font-family: Arial, Helvetica, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0.1, 0.1, 0.3);
 }
 
 .performance-table th,

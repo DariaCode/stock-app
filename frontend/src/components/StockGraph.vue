@@ -1,9 +1,12 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <template>
   <div ref="chartContainer" class="stock-graph">
-    <div class="tooltips">
-      <div class="tooltipDate" ref="tooltipDate"></div>
-      <div class="tooltip" ref="tooltip"></div>
+    <div ref="chartContainer" class="chart-container">
+      <div class="tooltips">
+        <div class="tooltipDate" ref="tooltipDate"></div>
+        <div class="tooltip" ref="tooltip"></div>
+        <div ref="legendContainer" class="legend-container"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +15,7 @@
 import * as d3 from 'd3'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
 import { getStocksData } from '../services/apiService'
+import { Stock } from './Models'
 
 export default defineComponent({
   name: 'StockGraph',
@@ -40,21 +44,38 @@ export default defineComponent({
   },
   setup (props) {
     const chartContainer = ref<HTMLDivElement | null>(null)
+    const legendContainer = ref<HTMLDivElement | null>(null)
     const tooltip = ref<HTMLDivElement | null>(null)
     const tooltipDate = ref<HTMLDivElement | null>(null)
+    const stocksData = ref<Record<string, Stock[]>>({})
+
+    const fetchStocksData = async () => {
+      try {
+        stocksData.value = await getStocksData()
+      } catch (error) {
+        console.error('Error fetching stocks data:', error)
+      }
+    }
 
     onMounted(async () => {
-      const stocksData: { [key: string]: { date: string; value: number; price: number }[] } = await getStocksData()
+      await fetchStocksData()
+      updateChart()
+    })
 
+    // Fetch data every 10 minutes
+    setInterval(fetchStocksData, 600000)
+
+    const updateChart = () => {
       if (chartContainer.value) {
         const { width, height, margin, colors } = props
 
-        const lineDataKeys = Object.keys(stocksData)
+        const lineDataKeys = Object.keys(stocksData.value)
 
         const validData = lineDataKeys.map((key) =>
-          stocksData[key].map((d: { date: string; value: number, price: number }) => ({
+          stocksData.value[key].map((d: Stock) => ({
             date: new Date(d.date),
-            value: d.value
+            value: d.value,
+            price: d.price
           }))
         )
 
@@ -140,7 +161,7 @@ export default defineComponent({
           const bisectDate = d3.bisector((d: { date: Date }) => d.date).left
 
           lineDataKeys.forEach((lineKey) => {
-            const lineData = stocksData[lineKey]
+            const lineData = stocksData.value[lineKey]
             const bisectIndex = bisectDate(
               lineData.map((d) => ({ date: new Date(d.date), value: d.value, price: d.price })),
               x.invert(xMouse)
@@ -158,7 +179,7 @@ export default defineComponent({
               .attr('y1', yPos)
               .attr('y2', yPos)
 
-            // Access the tooltip element
+            // Tooltip elements
             const tooltipValue = tooltip.value as HTMLDivElement
             const tooltipDateValue = tooltipDate.value as HTMLDivElement
 
@@ -176,7 +197,7 @@ export default defineComponent({
                   </tr>`
 
               lineDataKeys.forEach((lineKey) => {
-                const lineData = stocksData[lineKey]
+                const lineData = stocksData.value[lineKey]
                 const bisectIndex = bisectDate(
                   lineData.map((d) => ({ date: new Date(d.date), value: d.value, price: d.price })),
                   x.invert(xMouse)
@@ -189,10 +210,40 @@ export default defineComponent({
             }
           })
         }
-      }
-    })
 
-    return { chartContainer, tooltip, tooltipDate }
+        // Legend
+        const legendColors = colors.slice(0, lineDataKeys.length)
+        const legendLabels = lineDataKeys
+
+        const legendContainerValue = legendContainer.value as HTMLDivElement
+
+        const legend = d3.select(legendContainerValue).append('svg')
+          .attr('width', width)
+          .attr('height', 50)
+
+        legend.selectAll('rect')
+          .data(legendColors)
+          .enter()
+          .append('rect')
+          .attr('x', (d, i) => i * 100)
+          .attr('y', 10)
+          .attr('width', 20)
+          .attr('height', 20)
+          .attr('fill', (d) => d)
+
+        legend.selectAll('text')
+          .data(legendLabels)
+          .enter()
+          .append('text')
+          .attr('x', (d, i) => i * 100 + 30)
+          .attr('y', 25)
+          .text((d) => d)
+          .style('font-size', '14px')
+          .style('fill', 'black')
+      }
+    }
+
+    return { chartContainer, legendContainer, tooltip, tooltipDate }
   }
 })
 </script>
@@ -204,6 +255,18 @@ export default defineComponent({
   align-items: center;
   font-family: Arial, sans-serif;
   flex-direction: row-reverse;
+}
+
+.legend-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  max-width: 280px;
+  min-height: 280px;
+}
+
+.chart-container {
+  position: relative;
 }
 
 .tooltipDate {
