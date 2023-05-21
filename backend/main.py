@@ -19,9 +19,9 @@ def swagger():
         return jsonify(json.load(f))
     
 # Enable CORS for all routes
-CORS(app, origins=['http://localhost:8080', 'http://192.168.86.37:8080'])
+# CORS(app, origins=['http://localhost:8080', 'http://192.168.86.37:8080'])
 # CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
-# CORS(app)
+CORS(app)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
